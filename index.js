@@ -7,6 +7,7 @@ var app = express();
 app.use(express.json());
 app.use(cors({origin: 'http://localhost:4200'}));
  // cargar los modulos de routes
+ app.use('/api/usuario', require('./routes/auth.route.js'));
 
  app.set('port', 3000);
 
