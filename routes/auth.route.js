@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router(); 
 
 //defino controlador para el manejo de CRUD 
