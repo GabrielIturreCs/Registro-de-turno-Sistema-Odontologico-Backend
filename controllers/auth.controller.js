@@ -50,6 +50,46 @@ authCtrl.registerUsuario = async (req, res) => {
     }
 }
 
+authCtrl.loginUsuario = async (req, res) => { 
+
+    try { 
+        //const  { email,password}= req.body; 
+        const  { nombreUsuario,password}= req.body; 
+        //const user = await Usuario.findOne({email}); 
+        const user = await Usuario.findOne({nombreUsuario}); 
+        if (!user) { 
+            return res.json({ 
+                status: 0, 
+                msg: "Usuario no encontrado" 
+            }) 
+        } 
+        
+        // Comparar contraseña enviada vs contraseña hasheada en BD
+        const passwordValido = await compare(password, user.password);
+
+        if (!passwordValido) {
+            return res.json({
+                status: 0,
+                msg: "Contraseña incorrecta"
+            });
+        }
+ 
+        res.json({ 
+            status: 1, 
+            msg: "Login exitoso", 
+            nombreUsuario: user.nombreUsuario, //retorno información útil para el frontend 
+            tipoUsuario: user.tipoUsuario, //retorno información útil para el frontend
+            //userid: user._id //retorno información útil para el frontend 
+            id: user._id 
+        }) 
+    } catch (error) { 
+        res.json({ 
+            status: 0, 
+            msg: 'error' 
+        }) 
+    } 
+}
+
 
 //exportacion del modulo controlador 
 module.exports = authCtrl;
