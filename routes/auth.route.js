@@ -6,7 +6,7 @@ const authCtrl = require('../controllers/auth.controller');
 
 // definiendo rutas 
 router.post('/', authCtrl.registerUsuario); 
-//router.post('/login', authCtrl.loginUsuario); 
+router.post('/login', authCtrl.loginUsuario); 
 
 //exportacion del modulo de rutas 
 module.exports = router;
