@@ -3,6 +3,7 @@
 
 # Directorios de dependencias de Node.js (nunca deben ir al repositorio)
 node_modules/
+node_modules/.package-lock.json
 
 # Archivos de log
 *.log
