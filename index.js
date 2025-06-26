@@ -9,6 +9,7 @@ app.use(cors({origin: 'http://localhost:4200'}));
  // cargar los modulos de routes
 app.use('/api/usuario', require('./routes/auth.route.js'));
 app.use('/api/dentista', require('./routes/dentista.route.js'));
+app.use('/api/paciente', require('./routes/paciente.route.js'));
 
 app.set('port',process.env.PORT || 3000);
 
