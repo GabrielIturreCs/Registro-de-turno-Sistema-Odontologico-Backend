@@ -1,0 +1,18 @@
+# Archivos de entorno sensibles (nunca deben ir al repositorio)
+.env
+
+# Directorios de dependencias de Node.js (nunca deben ir al repositorio)
+node_modules/
+
+# Archivos de log
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de caché del IDE y del sistema operativo (pueden variar)
+.DS_Store
+.vscode/ # Si usas VS Code
+build/
+dist/
+tmp/
