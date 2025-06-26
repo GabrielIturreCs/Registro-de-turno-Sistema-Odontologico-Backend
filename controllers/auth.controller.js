@@ -92,4 +92,4 @@ authCtrl.loginUsuario = async (req, res) => {
 
 
 //exportacion del modulo controlador 
-module.exports = authCtrl;
+module.exports = authCtrl; 
