@@ -1,21 +1,26 @@
-const express = require('express')
-const cors = require('cors')
-const {mongoose} = require('./database')
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const { mongoose } = require('./database'); // Asumo que esta ruta a tu conexión DB es correcta
 
-var app = express();
+const app = express();
 
-app.use(express.json());
-app.use(cors({origin: 'http://localhost:4200'}));
- // cargar los modulos de routes
-app.use('/api/usuario', require('./routes/auth.route.js'));
-app.use('/api/dentista', require('./routes/dentista.route.js'));
-app.use('/api/paciente', require('./routes/paciente.route.js'));
+// Middlewares
+app.use(express.json()); // Para parsear el body de las solicitudes como JSON
+app.use(cors({ origin: 'http://localhost:4200' })); // Configuración de CORS para tu frontend Angular
 
-app.set('port',process.env.PORT || 3000);
+// Cargar los módulos de rutas
+// Aquí cargas todas las rutas definidas en auth.routes.js bajo el prefijo /api/auth
+const authRoutes = require('./routes/auth.route');
+app.use('/api/auth', authRoutes);
 
+// Configuración del puerto
+app.set('port', process.env.PORT || 3000);
 
-app.listen(app.get('port'), () =>{
-console.log('Server started on port: ', app.get('port'))
-
+// Iniciar el servidor
+app.listen(app.get('port'), () => {
+    console.log('Server started on port: ', app.get('port'));
+    console.log('Backend URL: http://localhost:' + app.get('port'));
+    console.log('Frontend URL (confirmación): http://localhost:4200'); // Solo para referencia
 });
 
