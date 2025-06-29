@@ -10,6 +10,7 @@ app.use(cors({origin: 'http://localhost:4200'}));
 app.use('/api/usuario', require('./routes/auth.route.js'));
 app.use('/api/dentista', require('./routes/dentista.route.js'));
 app.use('/api/paciente', require('./routes/paciente.route.js'));
+app.use('/api/turno', require('./routes/turnos.route.js'));
 
 app.set('port',process.env.PORT || 3000);
 

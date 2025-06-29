@@ -9,6 +9,12 @@ const DentistaSchema = new Schema({
     telefono: {type: String, required: true},
     direccion: {type: String, required: true},
     dni: {type: String, required: true},
+    userId:{
+        type: Schema.Types.ObjectId,
+        ref:'Usuario',
+        required:true,
+        unique:true
+    }
 })
 
 module.exports = mongoose.models.Dentista || mongoose.model('Dentista', DentistaSchema);
