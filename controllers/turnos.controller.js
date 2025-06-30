@@ -9,7 +9,7 @@ TurnoCtrl.getTurnos = async(req, res) =>{
 TurnoCtrl.getTurnosById = async(req, res) =>{
     try{
        const turno = await Turno.findById(req.params.id);
-       res.json(TurnoCtrl);
+       res.json(turno);
     }catch(err){
         res.status(404).json({
             'status':'0',
@@ -22,6 +22,11 @@ TurnoCtrl.createTurno = async(req,res) =>{
     try{
        const turno = new Turno(req.body);
        await turno.save();
+       res.status(201).json({
+        'status':'1',
+        'msg':'Turno creado correctamente',
+        'turno':turno
+       })
     }catch(err){
         res.status(400).json({
             'status':'0',
@@ -34,7 +39,7 @@ TurnoCtrl.updateTurno = async(req,res) =>{
     try{
         const turnoId = req.params.id;
         const{_id, ...datosActualizadoTurno} = req.body;
-        const turnoActualizado = Turno.findByIdAndUpdate(
+        const turnoActualizado = await Turno.findByIdAndUpdate(
             turnoId,
             {$set:datosActualizadoTurno},
             {new:true, runValidators:true}
