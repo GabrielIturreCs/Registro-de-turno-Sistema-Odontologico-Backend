@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+const Usuario = require('./usuario');
 
 const PacienteSchema = new Schema({
-    nroPaciente:{type: String, required:true, unique:true},
+    //nroPaciente:{type: String, required:true, unique:true},
     obraSocial: { type: String, required: true },
     nombre: { type: String, required: true },
     apellido: { type: String, required: true },
