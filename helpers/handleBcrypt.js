@@ -10,5 +10,5 @@ const compare = async (passwordPlain, hashPassword) => {
 }
 
 module.exports = { encrypt, compare }
-module.exports = {encrypt};
+//module.exports = {encrypt};
 
