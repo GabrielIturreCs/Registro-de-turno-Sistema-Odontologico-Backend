@@ -1,10 +1,16 @@
-const tratamiento = require('../models/tratamiento.js');
 const Tratamiento = require('../models/tratamiento.js');
 const TratamientoCtrl = {};
 
 TratamientoCtrl.getTratamiento = async(req, res) =>{
-    var tratamiento = await Tratamiento.find();
-    res.json(tratamiento);
+    try {
+        const tratamientos = await Tratamiento.find();
+        res.json(tratamientos);
+    } catch(err) {
+        res.status(500).json({
+            'status':'0',
+            'msg':'Error al obtener los tratamientos'
+        });
+    }
 }
 
 TratamientoCtrl.createTratamiento = async(req, res) =>{
@@ -69,9 +75,16 @@ TratamientoCtrl.updateTratamiento = async(req, res) =>{
         });
     }
 }
+
 TratamientoCtrl.deleteTratamiento = async(req, res) =>{
     try{
-        await Tratamiento.deleteOne({_id: req.params.id});
+        const resultado = await Tratamiento.deleteOne({_id: req.params.id});
+        if(resultado.deletedCount === 0) {
+            return res.status(404).json({
+                'status':'0',
+                'msg':'Tratamiento no encontrado'
+            });
+        }
         res.json({
             'status':'1',
             'msg':'Tratamiento eliminado correctamente'
@@ -83,4 +96,5 @@ TratamientoCtrl.deleteTratamiento = async(req, res) =>{
         });
     }
 }
+
 module.exports = TratamientoCtrl;

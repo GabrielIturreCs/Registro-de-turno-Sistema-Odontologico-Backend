@@ -2,11 +2,10 @@ const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
 const TratamientoSchema = new Schema({
-      nroTratamiento: {type:Number, require:true},
-      descripcion: {type:String, require:true},
-      duracion: {type:String, require:true},
-      historial: {type: String, require:true},
-
+      nroTratamiento: {type: Number, required: true},
+      descripcion: {type: String, required: true},
+      duracion: {type: String, required: true},
+      precio: {type: Number, required: true}
 })
 
 module.exports = mongoose.models.Tratamiento || mongoose.model('Tratamiento', TratamientoSchema);   
