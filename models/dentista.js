@@ -5,6 +5,8 @@ const Usuario = require('./usuario');
 const DentistaSchema = new Schema({
     //legajo:{ type: String, required: true, unique: true },
     //email: { type: String, required: true, unique: true },
+    legajo:{ type: String, required: true},
+    email: { type: String, required: true},
     nombre: {type: String, required: true},
     apellido: {type: String, required: true},
     telefono: {type: String, required: true},
