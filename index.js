@@ -12,6 +12,7 @@ app.use('/api/dentista', require('./routes/dentista.route.js'));
 app.use('/api/paciente', require('./routes/paciente.route.js'));
 app.use('/api/turno', require('./routes/turnos.route.js'));
 app.use('/api/tratamiento', require('./routes/tratamientos.route.js'));
+app.use('/api/mp', require('./routes/mp.route.js'));
 
 app.set('port',process.env.PORT || 3000);
 
