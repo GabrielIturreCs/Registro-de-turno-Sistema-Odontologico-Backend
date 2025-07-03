@@ -9,7 +9,7 @@ const Administrador = require('../models/administrador');
 authCtrl.registerUsuario = async (req, res) => {
     try {
         console.log("BODY RECIBIDO:", req.body);
-        const { nombreUsuario, password, confirmPassword, nombre, apellido, telefono, direccion, dni, tipoUsuario, obraSocial,email } = req.body;
+        const { nombreUsuario, password, confirmPassword, nombre, apellido, telefono, direccion, dni, tipoUsuario, obraSocial,email,legajo } = req.body;
 
         if (password !== confirmPassword) {
             return res.status(400).json({ msg: 'Las contraseñas no coinciden.' });
@@ -49,6 +49,8 @@ authCtrl.registerUsuario = async (req, res) => {
                 telefono,
                 direccion,
                 dni,
+                legajo,
+                email,
                 userId: usuario._id
             });
             await dentista.save();
