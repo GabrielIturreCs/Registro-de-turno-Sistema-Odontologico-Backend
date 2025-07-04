@@ -1,4 +1,5 @@
 const axios = require('axios');
+const cookieHelper = require('../helpers/cookieHelper');
 const mpCtrl = {};
 
 mpCtrl.getPaymentLink = async (req, res) => {
@@ -38,13 +39,13 @@ mpCtrl.getPaymentLink = async (req, res) => {
             items: items,
             external_reference: externalReference,
             back_urls: {
-                failure: `${process.env.FRONTEND_URL}/payment/failure?return=${userRole}&userType=${userType}&ref=${externalReference}`,
-                pending: `${process.env.FRONTEND_URL}/payment/pending?return=${userRole}&userType=${userType}&ref=${externalReference}`,
-                success: `${process.env.FRONTEND_URL}/payment/success?return=${userRole}&userType=${userType}&ref=${externalReference}`
+                failure: `${process.env.BACKEND_URL || 'https://backend-develop-nu3j.onrender.com'}/api/payment-callback/failure`,
+                pending: `${process.env.BACKEND_URL || 'https://backend-develop-nu3j.onrender.com'}/api/payment-callback/pending`,
+                success: `${process.env.BACKEND_URL || 'https://backend-develop-nu3j.onrender.com'}/api/payment-callback/success`
             },
             auto_return: "approved",
             statement_descriptor: "Sistema Odontológico",
-            notification_url: `${process.env.BACKEND_URL || process.env.FRONTEND_URL}/mp/webhook`
+            notification_url: `${process.env.BACKEND_URL || 'https://backend-develop-nu3j.onrender.com'}/api/mp/webhook`
         };
 
         console.log('📤 Enviando a MercadoPago:', JSON.stringify(body, null, 2));
@@ -57,6 +58,17 @@ mpCtrl.getPaymentLink = async (req, res) => {
         });
 
         console.log('✅ Pago creado correctamente, ID:', payment.data.id);
+
+        // Guardar información del turno en cookie segura
+        const turnoInfo = {
+            preferenceId: payment.data.id,
+            items: items,
+            userType: userType,
+            externalReference: externalReference,
+            timestamp: Date.now()
+        };
+        
+        cookieHelper.setTurnoCookie(res, turnoInfo);
 
         return res.status(200).json(payment.data);
 
