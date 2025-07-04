@@ -4,6 +4,10 @@ const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const dotenv = require("dotenv");
 const {mongoose} = require('./database')
+//google auth
+const passport = require('passport'); // ¡Importar Passport!
+const googleAuthRoutes = require('./routes/googleAuthRoutes'); // Importar las rutas de Google Auth
+require('./config/passport-setup'); // Asegurarse de que la estrategia de Passport esté configurada
 
 // Cargar variables de entorno
 dotenv.config();
@@ -23,6 +27,18 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
     exposedHeaders: ['Set-Cookie']
 }));
+
+// --- INICIO DE ADICIONES PARA GOOGLE LOGIN ---
+
+// Inicializar Passport (¡DEBE IR AQUÍ, ANTES DE CUALQUIER RUTA QUE LO USE!)
+app.use(passport.initialize());
+
+// Cargar las rutas de autenticación de Google con el prefijo '/api/auth/google'
+app.use('/api/auth/google', googleAuthRoutes);
+console.log('✅ Google Auth routes loaded');
+
+// --- FIN DE ADICIONES PARA GOOGLE LOGIN ---
+
  // cargar los modulos de routes
 console.log('🔄 Loading routes...');
 
