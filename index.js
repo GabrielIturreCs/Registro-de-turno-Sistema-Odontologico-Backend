@@ -28,7 +28,11 @@ console.log('🔄 Loading routes...');
 
 // Ruta de prueba simple
 app.get('/api/test', (req, res) => {
-    res.json({ message: 'Test route working', timestamp: new Date() });
+    res.json({ 
+        message: 'Test route working - Version 2.0', 
+        timestamp: new Date(),
+        routes_loaded: 'Payment callbacks should work now'
+    });
 });
 
 // Ruta de callback básica SIN dependencias
