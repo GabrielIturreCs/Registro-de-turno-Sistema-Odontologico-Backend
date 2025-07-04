@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const cookieHelper = require('../helpers/cookieHelper');
 
+console.log('🚀 Payment callback routes loaded successfully');
+
 // Endpoint para manejar el retorno exitoso de MercadoPago
 router.get('/success', (req, res) => {
     console.log('🎉 === PAGO EXITOSO ===');
