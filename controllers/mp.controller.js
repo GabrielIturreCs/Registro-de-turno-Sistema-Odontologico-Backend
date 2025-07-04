@@ -39,9 +39,9 @@ mpCtrl.getPaymentLink = async (req, res) => {
             items: items,
             external_reference: externalReference,
             back_urls: {
-                failure: `${process.env.BACKEND_URL || 'https://backend-develop-nu3j.onrender.com'}/api/payment-callback/failure`,
-                pending: `${process.env.BACKEND_URL || 'https://backend-develop-nu3j.onrender.com'}/api/payment-callback/pending`,
-                success: `${process.env.BACKEND_URL || 'https://backend-develop-nu3j.onrender.com'}/api/payment-callback/success`
+                failure: `${process.env.FRONTEND_URL}/payment-callback/failure`,
+                pending: `${process.env.FRONTEND_URL}/payment-callback/pending`,
+                success: `${process.env.FRONTEND_URL}/payment-callback/success`
             },
             auto_return: "approved",
             statement_descriptor: "Sistema Odontológico",
