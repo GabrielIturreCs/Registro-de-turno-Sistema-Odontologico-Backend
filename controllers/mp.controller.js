@@ -31,18 +31,20 @@ mpCtrl.getPaymentLink = async (req, res) => {
 
         const userType = req.body.user_type || 'paciente'; // Obtener tipo de usuario del frontend
         const userRole = userType === 'paciente' ? 'vistaPaciente' : 'dashboard';
+        const externalReference = req.body.external_reference || `turno_${Date.now()}`;
 
         const body = {
             payer_email: req.body.payer_email || "payer_email@gmail.com",
             items: items,
-            external_reference: req.body.external_reference || null,
+            external_reference: externalReference,
             back_urls: {
-                failure: `${process.env.FRONTEND_URL}/payment/failure?return=${userRole}`,
-                pending: `${process.env.FRONTEND_URL}/payment/pending?return=${userRole}`,
-                success: `${process.env.FRONTEND_URL}/payment/success?return=${userRole}`
+                failure: `${process.env.FRONTEND_URL}/payment/failure?return=${userRole}&userType=${userType}&ref=${externalReference}`,
+                pending: `${process.env.FRONTEND_URL}/payment/pending?return=${userRole}&userType=${userType}&ref=${externalReference}`,
+                success: `${process.env.FRONTEND_URL}/payment/success?return=${userRole}&userType=${userType}&ref=${externalReference}`
             },
             auto_return: "approved",
-            statement_descriptor: "Sistema Odontológico"
+            statement_descriptor: "Sistema Odontológico",
+            notification_url: `${process.env.BACKEND_URL || process.env.FRONTEND_URL}/mp/webhook`
         };
 
         console.log('📤 Enviando a MercadoPago:', JSON.stringify(body, null, 2));
