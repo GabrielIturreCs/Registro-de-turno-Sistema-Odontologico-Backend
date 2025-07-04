@@ -24,13 +24,21 @@ app.use(cors({
     exposedHeaders: ['Set-Cookie']
 }));
  // cargar los modulos de routes
+console.log('🔄 Loading routes...');
 app.use('/api/usuario', require('./routes/auth.route.js'));
+console.log('✅ Auth routes loaded');
 app.use('/api/dentista', require('./routes/dentista.route.js'));
+console.log('✅ Dentista routes loaded');
 app.use('/api/paciente', require('./routes/paciente.route.js'));
+console.log('✅ Paciente routes loaded');
 app.use('/api/turno', require('./routes/turnos.route.js'));
+console.log('✅ Turno routes loaded');
 app.use('/api/tratamiento', require('./routes/tratamientos.route.js'));
+console.log('✅ Tratamiento routes loaded');
 app.use('/api/mp', require('./routes/mp.route.js'));
+console.log('✅ MercadoPago routes loaded');
 app.use('/api/payment-callback', require('./routes/payment-callback.route.js'));
+console.log('✅ Payment callback routes loaded');
 
 app.set('port',process.env.PORT || 3000);
 
