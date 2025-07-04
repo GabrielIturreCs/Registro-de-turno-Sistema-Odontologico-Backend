@@ -1,13 +1,18 @@
-const express = require('express')
+const express = require('express');
 const router = express.Router();
-const mpCtrl = require('../controllers/mp.controller.js')
+const mpCtrl = require('../controllers/mp.controller.js');
 
-// Definimos las rutas para la gestión de un pago único en mercado pago
+console.log('mpCtrl:', mpCtrl); // Para ver qué funciones se están importando
+
+// Validar que las funciones existan antes de asignarlas a las rutas
+if (typeof mpCtrl.getPaymentLink !== 'function') {
+  throw new Error('mpCtrl.getPaymentLink no es una función o no está definida');
+}
+if (typeof mpCtrl.getSubscriptionLink !== 'function') {
+  throw new Error('mpCtrl.getSubscriptionLink no es una función o no está definida');
+}
+
 router.post('/payment', mpCtrl.getPaymentLink);
-
-// Definimos las rutas para la gestión de un pago por suscripción en mercado pago
-// ej. pagar todos los meses $ 10.000
 router.post('/subscription', mpCtrl.getSubscriptionLink);
-
 
 module.exports = router;
