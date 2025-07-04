@@ -53,6 +53,8 @@ app.get('/api/payment-callback/pending', (req, res) => {
 
 app.use('/api/usuario', require('./routes/auth.route.js'));
 console.log('✅ Auth routes loaded');
+app.use('/api/google-auth', require('./routes/google-auth.route.js'));
+console.log('✅ Google Auth routes loaded');
 app.use('/api/dentista', require('./routes/dentista.route.js'));
 console.log('✅ Dentista routes loaded');
 app.use('/api/paciente', require('./routes/paciente.route.js'));
