@@ -1,11 +1,64 @@
 const express = require('express');
 const router = express.Router();
-const cookieHelper = require('../helpers/cookieHelper');
 
 console.log('🚀 Payment callback routes loaded successfully');
 
-// Endpoint para manejar el retorno exitoso de MercadoPago
+// Ruta de prueba simple SIN dependencias
+router.get('/test', (req, res) => {
+    console.log('🧪 === RUTA DE PRUEBA ===');
+    res.json({ 
+        success: true, 
+        message: 'Payment callback routes working!',
+        timestamp: new Date().toISOString()
+    });
+});
+
+// Intentar cargar cookieHelper con manejo de errores
+let cookieHelper;
+try {
+    cookieHelper = require('../helpers/cookieHelper');
+    console.log('✅ CookieHelper loaded successfully');
+} catch (error) {
+    console.error('❌ Error loading cookieHelper:', error.message);
+    cookieHelper = null;
+}
+
+// Endpoint para manejar fallos de pago - VERSIÓN SIMPLIFICADA
+router.get('/failure', (req, res) => {
+    console.log('❌ === PAGO FALLIDO (SIMPLE) ===');
+    console.log('Query params:', req.query);
+    
+    // Redirigir directamente al frontend sin usar cookies por ahora
+    const redirectUrl = `${process.env.FRONTEND_URL || 'https://registrar-turno-sistema-clinico.onrender.com'}/payment/failure?return=vistaPaciente&userType=paciente`;
+    
+    console.log('🔄 Redirecting to:', redirectUrl);
+    return res.redirect(redirectUrl);
+});
+
+// Endpoint para manejar pagos pendientes - VERSIÓN SIMPLIFICADA  
+router.get('/pending', (req, res) => {
+    console.log('⏳ === PAGO PENDIENTE (SIMPLE) ===');
+    
+    const redirectUrl = `${process.env.FRONTEND_URL || 'https://registrar-turno-sistema-clinico.onrender.com'}/payment/pending?return=vistaPaciente&userType=paciente`;
+    
+    return res.redirect(redirectUrl);
+});
+
+// Endpoint para manejar éxito - VERSIÓN SIMPLIFICADA
 router.get('/success', (req, res) => {
+    console.log('🎉 === PAGO EXITOSO (SIMPLE) ===');
+    
+    const redirectUrl = `${process.env.FRONTEND_URL || 'https://registrar-turno-sistema-clinico.onrender.com'}/payment/success?return=vistaPaciente&userType=paciente`;
+    
+    return res.redirect(redirectUrl);
+});
+
+// VERSIONES COMPLETAS CON COOKIES (solo si cookieHelper está disponible)
+if (cookieHelper) {
+    console.log('🍪 Enabling cookie-based payment callbacks');
+    
+    // Endpoint para manejar el retorno exitoso de MercadoPago
+    router.get('/success-full', (req, res) => {
     console.log('🎉 === PAGO EXITOSO ===');
     console.log('Query params:', req.query);
     console.log('Cookies:', req.cookies);
@@ -95,5 +148,9 @@ router.get('/status', (req, res) => {
         message: 'No payment status found'
     });
 });
+
+} else {
+    console.log('⚠️ CookieHelper not available - using simple redirects only');
+}
 
 module.exports = router;
