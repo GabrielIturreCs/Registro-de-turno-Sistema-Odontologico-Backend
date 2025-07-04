@@ -72,11 +72,13 @@ TurnoCtrl.createTurno = async(req, res) => {
             }
         }
 
+        // Construir el objeto de datos del turno
         const turnoData = {
             nroTurno: nroTurno,
             fecha: req.body.fecha,
             hora: req.body.hora,
-            estado: req.body.estado || 'reservado',
+            // Usar SIEMPRE el estado recibido del frontend, sin sobreescribir
+            estado: typeof req.body.estado === 'string' ? req.body.estado : 'reservado',
             pacienteId: req.body.pacienteId,
             tratamientoId: req.body.tratamientoId,
             observaciones: req.body.observaciones || ''
@@ -122,6 +124,7 @@ TurnoCtrl.createTurno = async(req, res) => {
     }
 }
 
+// Permite actualizar el estado del turno (por ejemplo, de 'pendiente' a 'reservado')
 TurnoCtrl.updateTurno = async(req, res) => {
     try {
         const turnoId = req.params.id;
