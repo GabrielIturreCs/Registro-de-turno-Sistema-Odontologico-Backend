@@ -29,14 +29,17 @@ mpCtrl.getPaymentLink = async (req, res) => {
 
         console.log('🛒 Items para el pago:', JSON.stringify(items, null, 2));
 
+        const userType = req.body.user_type || 'paciente'; // Obtener tipo de usuario del frontend
+        const userRole = userType === 'paciente' ? 'vistaPaciente' : 'dashboard';
+
         const body = {
             payer_email: req.body.payer_email || "payer_email@gmail.com",
             items: items,
             external_reference: req.body.external_reference || null,
             back_urls: {
-                failure: `${process.env.FRONTEND_URL}/payment/failure`,
-                pending: `${process.env.FRONTEND_URL}/payment/pending`,
-                success: `${process.env.FRONTEND_URL}/payment/success`
+                failure: `${process.env.FRONTEND_URL}/payment/failure?return=${userRole}`,
+                pending: `${process.env.FRONTEND_URL}/payment/pending?return=${userRole}`,
+                success: `${process.env.FRONTEND_URL}/payment/success?return=${userRole}`
             },
             auto_return: "approved",
             statement_descriptor: "Sistema Odontológico"
