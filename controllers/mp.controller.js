@@ -8,6 +8,15 @@ mpCtrl.getPaymentLink = async (req, res) => {
         console.log('ACCESS_TOKEN configured:', !!process.env.ACCESS_TOKEN);
         console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
         
+        // Validar que el ACCESS_TOKEN esté presente
+        if (!process.env.ACCESS_TOKEN) {
+            console.error('ACCESS_TOKEN not configured');
+            return res.status(500).json({
+                error: true,
+                msg: "ACCESS_TOKEN not configured"
+            });
+        }
+        
         const url = "https://api.mercadopago.com/checkout/preferences";
         const body = {
             payer_email: req.body.payer_email || "payer_email@gmail.com",
@@ -45,15 +54,20 @@ mpCtrl.getPaymentLink = async (req, res) => {
     } catch (error) {
         console.error('=== MERCADO PAGO ERROR ===');
         console.error('Error status:', error.response?.status);
-        console.error('Error data:', error.response?.data);
+        console.error('Error data:', JSON.stringify(error.response?.data, null, 2));
         console.error('Error message:', error.message);
-        console.error('Full error:', error);
+        console.error('Request config:', JSON.stringify(error.config, null, 2));
         
-        return res.status(500).json({
+        // Respuesta más detallada para debugging
+        const errorResponse = {
             error: true,
             msg: "Failed to create payment",
-            details: error.response?.data || error.message
-        });
+            details: error.response?.data || error.message,
+            status: error.response?.status,
+            mpError: error.response?.data
+        };
+        
+        return res.status(500).json(errorResponse);
     }
 }
 
