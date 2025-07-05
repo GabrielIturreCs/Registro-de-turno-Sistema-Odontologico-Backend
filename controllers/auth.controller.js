@@ -107,6 +107,8 @@ authCtrl.loginUsuario = async (req, res) => {
             msg: "Login exitoso", 
             nombreUsuario: user.nombreUsuario, //retorno información útil para el frontend 
             tipoUsuario: user.tipoUsuario, //retorno información útil para el frontend
+            nombre: user.nombre, //retorno información útil para el frontend
+            apellido: user.apellido, //retorno información útil para el frontend
             //userid: user._id //retorno información útil para el frontend 
             id: user._id 
         }) 
