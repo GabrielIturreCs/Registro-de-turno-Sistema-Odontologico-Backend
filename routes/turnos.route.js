@@ -7,5 +7,6 @@ router.get('/:id',TurnoCtrl.getTurnosById);
 router.delete('/:id',TurnoCtrl.deleteTurno);
 router.put('/:id',TurnoCtrl.updateTurno);
 router.post('/',TurnoCtrl.createTurno);
+router.delete('/:id/cancelar', TurnoCtrl.cancelarTurnoYReembolso);
 
 module.exports = router;
