@@ -4,13 +4,6 @@ const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const dotenv = require("dotenv");
 const {mongoose} = require('./database')
-//google auth
-const passport = require('passport'); // ¡Importar Passport!
-const googleAuthRoutes = require('./routes/googleAuthRoutes'); // Importar las rutas de Google Auth
-require('./config/passport-setup'); // Asegurarse de que la estrategia de Passport esté configurada
-
-// Cargar variables de entorno
-dotenv.config();
 
 // Cargar variables de entorno
 dotenv.config();
@@ -30,21 +23,6 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
     exposedHeaders: ['Set-Cookie']
 }));
-<<<<<<< HEAD
-=======
-
-// --- INICIO DE ADICIONES PARA GOOGLE LOGIN ---
-
-// Inicializar Passport (¡DEBE IR AQUÍ, ANTES DE CUALQUIER RUTA QUE LO USE!)
-app.use(passport.initialize());
-
-// Cargar las rutas de autenticación de Google con el prefijo '/api/auth/google'
-app.use('/api/auth/google', googleAuthRoutes);
-console.log('✅ Google Auth routes loaded');
-
-// --- FIN DE ADICIONES PARA GOOGLE LOGIN ---
-
->>>>>>> integracion-back
  // cargar los modulos de routes
 console.log('🔄 Loading routes...');
 
@@ -75,11 +53,8 @@ app.get('/api/payment-callback/pending', (req, res) => {
 
 app.use('/api/usuario', require('./routes/auth.route.js'));
 console.log('✅ Auth routes loaded');
-<<<<<<< HEAD
-=======
 app.use('/api/google-auth', require('./routes/google-auth.route.js'));
 console.log('✅ Google Auth routes loaded');
->>>>>>> integracion-back
 app.use('/api/dentista', require('./routes/dentista.route.js'));
 console.log('✅ Dentista routes loaded');
 app.use('/api/paciente', require('./routes/paciente.route.js'));
