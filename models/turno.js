@@ -14,7 +14,9 @@ const TurnoSchema = new Schema({
       pacienteId: {type: mongoose.Schema.Types.ObjectId, ref: 'Paciente', required: true},
       tratamientoId: {type: mongoose.Schema.Types.ObjectId, ref: 'Tratamiento', required: true},
       observaciones: {type: String},
-      fechaCreacion: {type: Date, default: Date.now}
+      fechaCreacion: {type: Date, default: Date.now},
+      paymentId: {type: String}, // ID de pago de MercadoPago
+      paymentStatus: {type: String} // Estado del pago (approved, refunded, cancelled, etc)
 })
 
 module.exports = mongoose.models.Turno || mongoose.model('Turno', TurnoSchema);
