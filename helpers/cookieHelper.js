@@ -11,12 +11,21 @@ const COOKIE_OPTIONS = {
     path: '/'
 };
 
+// Verificar que COOKIE_SECRET esté configurado
+const getCookieSecret = () => {
+    if (!process.env.COOKIE_SECRET) {
+        console.warn('⚠️ COOKIE_SECRET no está configurado, usando valor por defecto');
+        return 'default-secret-key-for-development';
+    }
+    return process.env.COOKIE_SECRET;
+};
+
 // Crear y establecer cookie de información de turno
 cookieHelper.setTurnoCookie = (res, turnoInfo) => {
     try {
         const token = jwt.sign(
             { turnoData: turnoInfo }, 
-            process.env.COOKIE_SECRET, 
+            getCookieSecret(), 
             { expiresIn: '1h' } // El turno expira en 1 hora
         );
         
@@ -42,7 +51,7 @@ cookieHelper.getTurnoCookie = (req) => {
             return null;
         }
         
-        const decoded = jwt.verify(token, process.env.COOKIE_SECRET);
+        const decoded = jwt.verify(token, getCookieSecret());
         console.log('✅ Cookie de turno decodificada exitosamente');
         return decoded.turnoData;
     } catch (error) {
@@ -77,7 +86,7 @@ cookieHelper.setPaymentStatusCookie = (res, status, userType = 'paciente') => {
         
         const token = jwt.sign(
             { paymentData }, 
-            process.env.COOKIE_SECRET, 
+            getCookieSecret(), 
             { expiresIn: '10m' } // 10 minutos
         );
         
@@ -102,7 +111,7 @@ cookieHelper.getPaymentStatusCookie = (req) => {
             return null;
         }
         
-        const decoded = jwt.verify(token, process.env.COOKIE_SECRET);
+        const decoded = jwt.verify(token, getCookieSecret());
         return decoded.paymentData;
     } catch (error) {
         console.error('❌ Error al decodificar cookie de pago:', error);
