@@ -12,6 +12,9 @@ require('./config/passport-setup'); // Asegurarse de que la estrategia de Passpo
 // Cargar variables de entorno
 dotenv.config();
 
+// Cargar variables de entorno
+dotenv.config();
+
 var app = express();
 
 app.use(express.json());
@@ -27,6 +30,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
     exposedHeaders: ['Set-Cookie']
 }));
+<<<<<<< HEAD
 
 // --- INICIO DE ADICIONES PARA GOOGLE LOGIN ---
 
@@ -71,6 +75,12 @@ app.use('/api/usuario', require('./routes/auth.route.js'));
 console.log('✅ Auth routes loaded');
 app.use('/api/google-auth', require('./routes/google-auth.route.js'));
 console.log('✅ Google Auth routes loaded');
+=======
+ // cargar los modulos de routes
+console.log('🔄 Loading routes...');
+app.use('/api/usuario', require('./routes/auth.route.js'));
+console.log('✅ Auth routes loaded');
+>>>>>>> 75a1a37cfa3e3999d89327a6f826ee9f602dace5
 app.use('/api/dentista', require('./routes/dentista.route.js'));
 console.log('✅ Dentista routes loaded');
 app.use('/api/paciente', require('./routes/paciente.route.js'));
@@ -81,6 +91,11 @@ app.use('/api/tratamiento', require('./routes/tratamientos.route.js'));
 console.log('✅ Tratamiento routes loaded');
 app.use('/api/mp', require('./routes/mp.route.js'));
 console.log('✅ MercadoPago routes loaded');
+<<<<<<< HEAD
+=======
+app.use('/api/payment-callback', require('./routes/payment-callback.route.js'));
+console.log('✅ Payment callback routes loaded');
+>>>>>>> 75a1a37cfa3e3999d89327a6f826ee9f602dace5
 
 app.set('port',process.env.PORT || 3000);
 

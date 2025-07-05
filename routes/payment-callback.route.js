@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+<<<<<<< HEAD
 
 console.log('🚀 Payment callback routes loaded successfully');
 
@@ -59,6 +60,14 @@ if (cookieHelper) {
     
     // Endpoint para manejar el retorno exitoso de MercadoPago
     router.get('/success-full', (req, res) => {
+=======
+const cookieHelper = require('../helpers/cookieHelper');
+
+console.log('🚀 Payment callback routes loaded successfully');
+
+// Endpoint para manejar el retorno exitoso de MercadoPago
+router.get('/success', (req, res) => {
+>>>>>>> 75a1a37cfa3e3999d89327a6f826ee9f602dace5
     console.log('🎉 === PAGO EXITOSO ===');
     console.log('Query params:', req.query);
     console.log('Cookies:', req.cookies);
@@ -149,8 +158,11 @@ router.get('/status', (req, res) => {
     });
 });
 
+<<<<<<< HEAD
 } else {
     console.log('⚠️ CookieHelper not available - using simple redirects only');
 }
 
+=======
+>>>>>>> 75a1a37cfa3e3999d89327a6f826ee9f602dace5
 module.exports = router;

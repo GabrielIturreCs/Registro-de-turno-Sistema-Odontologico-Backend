@@ -42,7 +42,6 @@ mpCtrl.getPaymentLink = async (req, res) => {
                 failure: `${process.env.FRONTEND_URL}/payment-callback/failure`,
                 pending: `${process.env.FRONTEND_URL}/payment-callback/pending`,
                 success: `${process.env.FRONTEND_URL}/payment-callback/success`
-                
             },
             auto_return: "approved",
             statement_descriptor: "Sistema Odontológico",
