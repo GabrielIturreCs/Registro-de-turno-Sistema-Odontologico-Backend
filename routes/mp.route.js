@@ -2,17 +2,24 @@ const express = require('express');
 const router = express.Router();
 const mpCtrl = require('../controllers/mp.controller.js');
 
-console.log('mpCtrl:', mpCtrl); // Para ver qué funciones se están importando
+console.log('mpCtrl:', mpCtrl);
+console.log('mpCtrl keys:', Object.keys(mpCtrl));
 
-// Validar que las funciones existan antes de asignarlas a las rutas
-if (typeof mpCtrl.getPaymentLink !== 'function') {
-  throw new Error('mpCtrl.getPaymentLink no es una función o no está definida');
-}
-if (typeof mpCtrl.getSubscriptionLink !== 'function') {
-  throw new Error('mpCtrl.getSubscriptionLink no es una función o no está definida');
-}
+// Rutas básicas sin validación estricta
+router.post('/payment', (req, res) => {
+    if (mpCtrl.getPaymentLink) {
+        return mpCtrl.getPaymentLink(req, res);
+    } else {
+        return res.status(500).json({ error: 'getPaymentLink not available' });
+    }
+});
 
-router.post('/payment', mpCtrl.getPaymentLink);
-router.post('/subscription', mpCtrl.getSubscriptionLink);
+router.post('/subscription', (req, res) => {
+    if (mpCtrl.getSubscriptionLink) {
+        return mpCtrl.getSubscriptionLink(req, res);
+    } else {
+        return res.status(500).json({ error: 'getSubscriptionLink not available' });
+    }
+});
 
 module.exports = router;
