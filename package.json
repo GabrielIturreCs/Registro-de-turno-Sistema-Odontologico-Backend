@@ -17,16 +17,16 @@
     "dotenv": "^17.0.1",
     "express": "^5.1.0",
 <<<<<<< HEAD
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.16.0"
+=======
     "google-auth-library": "^9.15.1",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0"
-=======
-    "jsonwebtoken": "^9.0.2",
-    "mongodb": "^6.17.0",
-    "mongoose": "^8.16.0"
->>>>>>> 75a1a37cfa3e3999d89327a6f826ee9f602dace5
+>>>>>>> integracion-back
   }
 }

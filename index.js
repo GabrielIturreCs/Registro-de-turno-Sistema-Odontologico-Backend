@@ -31,6 +31,7 @@ app.use(cors({
     exposedHeaders: ['Set-Cookie']
 }));
 <<<<<<< HEAD
+=======
 
 // --- INICIO DE ADICIONES PARA GOOGLE LOGIN ---
 
@@ -43,6 +44,7 @@ console.log('✅ Google Auth routes loaded');
 
 // --- FIN DE ADICIONES PARA GOOGLE LOGIN ---
 
+>>>>>>> integracion-back
  // cargar los modulos de routes
 console.log('🔄 Loading routes...');
 
@@ -73,14 +75,11 @@ app.get('/api/payment-callback/pending', (req, res) => {
 
 app.use('/api/usuario', require('./routes/auth.route.js'));
 console.log('✅ Auth routes loaded');
+<<<<<<< HEAD
+=======
 app.use('/api/google-auth', require('./routes/google-auth.route.js'));
 console.log('✅ Google Auth routes loaded');
-=======
- // cargar los modulos de routes
-console.log('🔄 Loading routes...');
-app.use('/api/usuario', require('./routes/auth.route.js'));
-console.log('✅ Auth routes loaded');
->>>>>>> 75a1a37cfa3e3999d89327a6f826ee9f602dace5
+>>>>>>> integracion-back
 app.use('/api/dentista', require('./routes/dentista.route.js'));
 console.log('✅ Dentista routes loaded');
 app.use('/api/paciente', require('./routes/paciente.route.js'));
@@ -91,11 +90,6 @@ app.use('/api/tratamiento', require('./routes/tratamientos.route.js'));
 console.log('✅ Tratamiento routes loaded');
 app.use('/api/mp', require('./routes/mp.route.js'));
 console.log('✅ MercadoPago routes loaded');
-<<<<<<< HEAD
-=======
-app.use('/api/payment-callback', require('./routes/payment-callback.route.js'));
-console.log('✅ Payment callback routes loaded');
->>>>>>> 75a1a37cfa3e3999d89327a6f826ee9f602dace5
 
 app.set('port',process.env.PORT || 3000);
 
