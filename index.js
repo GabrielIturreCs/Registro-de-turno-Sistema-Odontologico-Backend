@@ -65,6 +65,10 @@ app.use('/api/tratamiento', require('./routes/tratamientos.route.js'));
 console.log('✅ Tratamiento routes loaded');
 app.use('/api/mp', require('./routes/mp.route.js'));
 console.log('✅ MercadoPago routes loaded');
+app.use('/api/payment', require('./routes/payment.route.js'));
+console.log('✅ Payment routes loaded');
+app.use('/api/payment-callback', require('./routes/payment-callback.route.js'));
+console.log('✅ Payment callback routes loaded');
 
 app.set('port',process.env.PORT || 3000);
 
