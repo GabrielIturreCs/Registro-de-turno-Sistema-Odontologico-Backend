@@ -2,6 +2,7 @@ const Turno = require('../models/turno.js')
 const Tratamiento = require('../models/tratamiento.js')
 const Paciente = require('../models/paciente.js')
 const TurnoCtrl = {}
+const axios = require('axios');
 
 TurnoCtrl.getTurnos = async(req, res) => {
     try {
@@ -81,7 +82,9 @@ TurnoCtrl.createTurno = async(req, res) => {
             estado: typeof req.body.estado === 'string' ? req.body.estado : 'reservado',
             pacienteId: req.body.pacienteId,
             tratamientoId: req.body.tratamientoId,
-            observaciones: req.body.observaciones || ''
+            observaciones: req.body.observaciones || '',
+            paymentId: req.body.paymentId || '',
+            paymentStatus: req.body.paymentStatus || ''
         };
 
         // Agregar información del tratamiento
@@ -170,5 +173,48 @@ TurnoCtrl.deleteTurno = async(req, res) => {
         });
     }
 }
+
+TurnoCtrl.cancelarTurnoYReembolso = async (req, res) => {
+  try {
+    const turno = await Turno.findById(req.params.id);
+    if (!turno) return res.status(404).json({ msg: 'Turno no encontrado' });
+
+    // 1. Cambiar estado del turno
+    turno.estado = 'cancelado';
+
+    // 2. Intentar reembolsar/cancelar el pago en MercadoPago
+    let refundResult = null;
+    if (turno.paymentId) {
+      // Intentar refund (si ya está aprobado)
+      try {
+        const refundUrl = `https://api.mercadopago.com/v1/payments/${turno.paymentId}/refunds`;
+        refundResult = await axios.post(refundUrl, {}, {
+          headers: {
+            Authorization: `Bearer ${process.env.ACCESS_TOKEN}`
+          }
+        });
+        turno.paymentStatus = 'refunded';
+      } catch (err) {
+        // Si no se puede refund, intentar cancelar (si está pendiente)
+        try {
+          const cancelUrl = `https://api.mercadopago.com/v1/payments/${turno.paymentId}`;
+          await axios.put(cancelUrl, { status: 'cancelled' }, {
+            headers: {
+              Authorization: `Bearer ${process.env.ACCESS_TOKEN}`
+            }
+          });
+          turno.paymentStatus = 'cancelled';
+        } catch (err2) {
+          return res.status(400).json({ msg: 'No se pudo cancelar ni reembolsar el pago en MercadoPago', error: err2.response?.data || err2.message });
+        }
+      }
+    }
+
+    await turno.save();
+    return res.json({ msg: 'Turno cancelado y pago gestionado', refundResult });
+  } catch (error) {
+    return res.status(500).json({ msg: 'Error al cancelar turno', error });
+  }
+};
 
 module.exports = TurnoCtrl;
