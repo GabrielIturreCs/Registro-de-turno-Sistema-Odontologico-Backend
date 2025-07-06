@@ -16,8 +16,24 @@ app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
 // Configurar CORS con credentials habilitado
+const allowedOrigins = [
+    process.env.FRONTEND_URL || 'http://localhost:4200',
+    'https://registrar-turno-sistema-clinico.onrender.com',
+    'https://accounts.google.com',
+    'https://www.googleapis.com',
+    'http://localhost:4200' // Para desarrollo local
+];
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:4200',
+    origin: function (origin, callback) {
+        // Permite requests sin origin (como aplicaciones móviles) o desde orígenes permitidos
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.log('🚫 CORS blocked for origin:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true, // Habilitar cookies
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
