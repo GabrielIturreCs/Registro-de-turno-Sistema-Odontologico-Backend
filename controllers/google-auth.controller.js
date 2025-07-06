@@ -16,6 +16,8 @@ const client = new OAuth2Client(
 googleAuthCtrl.verifyGoogleToken = async (req, res) => {
     console.log('🔍 === VERIFICANDO TOKEN DE GOOGLE ===');
     console.log('Token recibido:', req.body.token);
+    console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
+    console.log('CORS headers should be set by middleware');
     
     try {
         const { token } = req.body;
