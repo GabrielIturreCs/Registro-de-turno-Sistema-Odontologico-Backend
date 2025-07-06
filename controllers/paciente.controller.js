@@ -22,6 +22,28 @@ pacienteCtrl.getPacienteById = async (req, res) => {
     }
 }
 
+pacienteCtrl.getPacienteByUserId = async (req, res) => {
+    try {
+        const paciente = await Paciente.findOne({ userId: req.params.userId });
+        if (!paciente) {
+            return res.status(404).json({
+                'success': false,
+                'msg': 'Paciente no encontrado para este usuario'
+            });
+        }
+        res.status(200).json({
+            'success': true,
+            'msg': 'Paciente encontrado',
+            'patient': paciente
+        });
+    } catch (err) {
+        res.status(500).json({
+            'success': false,
+            'msg': 'Error al buscar paciente'
+        });
+    }
+}
+
 pacienteCtrl.createPaciente = async (req, res) =>{
      try{
        const paciente = new Paciente(req.body);
@@ -29,12 +51,17 @@ pacienteCtrl.createPaciente = async (req, res) =>{
          res.status(201).json({
             'status':'1',
             'msg':'paciente creado correctamente',
-            'paciente':paciente
+            'paciente':paciente,
+            'success': true,
+            '_id': paciente._id
          })
      }catch(err){
+        console.error('Error creando paciente:', err);
         res.status(400).json({
             'status':'0',
-            'msg':'Error al crear el paciente'
+            'msg':'Error al crear el paciente',
+            'success': false,
+            'error': err.message
         })
      }
 }

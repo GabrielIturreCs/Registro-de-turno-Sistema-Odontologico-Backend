@@ -4,6 +4,7 @@ const pacienteCtrl = require('../controllers/paciente.controller.js');
 
 router.put('/:id', pacienteCtrl.updatePaciente);
 router.get('/', pacienteCtrl.getPacientes);
+router.get('/by-user/:userId', pacienteCtrl.getPacienteByUserId);
 router.get('/:id', pacienteCtrl.getPacienteById);
 router.post('/', pacienteCtrl.createPaciente);
 router.delete('/:id', pacienteCtrl.deletePaciente);

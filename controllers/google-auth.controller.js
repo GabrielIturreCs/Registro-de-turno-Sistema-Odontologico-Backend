@@ -1,5 +1,6 @@
 const { OAuth2Client } = require('google-auth-library');
 const Usuario = require('../models/usuario');
+const Paciente = require('../models/paciente');
 const { encrypt } = require('../helpers/handleBcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -68,6 +69,9 @@ googleAuthCtrl.verifyGoogleToken = async (req, res) => {
             ]
         });
 
+        let needsProfileCompletion = false;
+        let patientId = null;
+
         if (usuario) {
             // Usuario existente - actualizar información si es necesario
             if (!usuario.googleId) {
@@ -77,6 +81,17 @@ googleAuthCtrl.verifyGoogleToken = async (req, res) => {
             }
             
             console.log('✅ Usuario existente encontrado:', usuario.email);
+            
+            // Verificar si tiene perfil de paciente completo
+            if (usuario.tipoUsuario === 'paciente') {
+                const paciente = await Paciente.findOne({ userId: usuario._id });
+                if (paciente) {
+                    patientId = paciente._id;
+                    needsProfileCompletion = false;
+                } else {
+                    needsProfileCompletion = true;
+                }
+            }
         } else {
             // Crear nuevo usuario
             const defaultPassword = await encrypt('google-oauth-' + Date.now());
@@ -97,6 +112,9 @@ googleAuthCtrl.verifyGoogleToken = async (req, res) => {
 
             await usuario.save();
             console.log('✅ Nuevo usuario creado:', usuario.email);
+            
+            // Nuevo usuario necesita completar perfil de paciente
+            needsProfileCompletion = true;
         }
 
         console.log('🔍 Generando JWT token...');
@@ -124,7 +142,10 @@ googleAuthCtrl.verifyGoogleToken = async (req, res) => {
                 apellido: usuario.apellido,
                 email: usuario.email,
                 tipoUsuario: usuario.tipoUsuario,
-                picture: usuario.picture
+                picture: usuario.picture,
+                needsProfileCompletion: needsProfileCompletion,
+                hasCompleteProfile: !needsProfileCompletion,
+                patientId: patientId
             }
         };
         
