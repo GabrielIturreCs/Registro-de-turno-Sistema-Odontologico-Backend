@@ -46,23 +46,83 @@ pacienteCtrl.getPacienteByUserId = async (req, res) => {
 
 pacienteCtrl.createPaciente = async (req, res) =>{
      try{
+       console.log('📥 Datos recibidos para crear paciente:', req.body);
+       
+       // Validar que todos los campos requeridos estén presentes
+       const requiredFields = ['nombre', 'apellido', 'telefono', 'direccion', 'dni', 'email', 'obraSocial', 'userId'];
+       for (const field of requiredFields) {
+         if (!req.body[field]) {
+           return res.status(400).json({
+             'status': '0',
+             'msg': `El campo ${field} es requerido`,
+             'success': false
+           });
+         }
+       }
+
+       // Verificar si ya existe un paciente con el mismo userId
+       const existingPaciente = await Paciente.findOne({ userId: req.body.userId });
+       if (existingPaciente) {
+         return res.status(400).json({
+           'status': '0',
+           'msg': 'Ya existe un paciente asociado a este usuario',
+           'success': false
+         });
+       }
+
+       // Verificar si ya existe un paciente con el mismo DNI
+       const existingDni = await Paciente.findOne({ dni: req.body.dni });
+       if (existingDni) {
+         return res.status(400).json({
+           'status': '0',
+           'msg': 'Ya existe un paciente con este DNI',
+           'success': false
+         });
+       }
+
        const paciente = new Paciente(req.body);
        await paciente.save();
-         res.status(201).json({
-            'status':'1',
-            'msg':'paciente creado correctamente',
-            'paciente':paciente,
-            'success': true,
-            '_id': paciente._id
-         })
+       
+       console.log('✅ Paciente creado exitosamente:', paciente._id);
+       
+       res.status(201).json({
+         'status': '1',
+         'msg': 'Paciente creado correctamente',
+         'paciente': paciente,
+         'success': true,
+         '_id': paciente._id
+       });
      }catch(err){
-        console.error('Error creando paciente:', err);
+        console.error('❌ Error creando paciente:', err);
+        console.error('❌ Error message:', err.message);
+        console.error('❌ Error stack:', err.stack);
+        
+        let errorMessage = 'Error al crear el paciente';
+        
+        // Manejar errores específicos de MongoDB
+        if (err.code === 11000) {
+          if (err.keyPattern?.userId) {
+            errorMessage = 'Ya existe un paciente asociado a este usuario';
+          } else if (err.keyPattern?.dni) {
+            errorMessage = 'Ya existe un paciente con este DNI';
+          } else if (err.keyPattern?.email) {
+            errorMessage = 'Ya existe un paciente con este email';
+          } else {
+            errorMessage = 'Datos duplicados encontrados';
+          }
+        } else if (err.name === 'ValidationError') {
+          const errors = Object.values(err.errors).map(e => e.message);
+          errorMessage = `Errores de validación: ${errors.join(', ')}`;
+        } else if (err.name === 'CastError') {
+          errorMessage = 'ID de usuario inválido';
+        }
+        
         res.status(400).json({
-            'status':'0',
-            'msg':'Error al crear el paciente',
+            'status': '0',
+            'msg': errorMessage,
             'success': false,
             'error': err.message
-        })
+        });
      }
 }
 

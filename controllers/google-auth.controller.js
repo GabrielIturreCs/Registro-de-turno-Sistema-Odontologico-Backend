@@ -54,6 +54,7 @@ googleAuthCtrl.verifyGoogleToken = async (req, res) => {
         console.log('✅ Token verificado exitosamente');
         console.log('📧 Email:', payload.email);
         console.log('👤 Nombre:', payload.given_name, payload.family_name);
+        console.log('🆔 Google ID:', payload['sub']);
 
         const googleId = payload['sub'];
         const email = payload['email'];
@@ -81,6 +82,7 @@ googleAuthCtrl.verifyGoogleToken = async (req, res) => {
             }
             
             console.log('✅ Usuario existente encontrado:', usuario.email);
+            console.log('🆔 Usuario ID:', usuario._id);
             
             // Verificar si tiene perfil de paciente completo
             if (usuario.tipoUsuario === 'paciente') {
@@ -88,8 +90,10 @@ googleAuthCtrl.verifyGoogleToken = async (req, res) => {
                 if (paciente) {
                     patientId = paciente._id;
                     needsProfileCompletion = false;
+                    console.log('✅ Paciente encontrado:', paciente._id);
                 } else {
                     needsProfileCompletion = true;
+                    console.log('⚠️ Paciente no encontrado, necesita completar perfil');
                 }
             }
         } else {
@@ -112,6 +116,7 @@ googleAuthCtrl.verifyGoogleToken = async (req, res) => {
 
             await usuario.save();
             console.log('✅ Nuevo usuario creado:', usuario.email);
+            console.log('🆔 Nuevo usuario ID:', usuario._id);
             
             // Nuevo usuario necesita completar perfil de paciente
             needsProfileCompletion = true;
