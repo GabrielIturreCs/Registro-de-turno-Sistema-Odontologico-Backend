@@ -15,20 +15,34 @@ const client = new OAuth2Client(
 // Verificar token de Google y autenticar usuario
 googleAuthCtrl.verifyGoogleToken = async (req, res) => {
     console.log('🔍 === VERIFICANDO TOKEN DE GOOGLE ===');
-    console.log('Token recibido:', req.body.token);
-    console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
-    console.log('CORS headers should be set by middleware');
+    console.log('📍 Origin:', req.headers.origin);
+    console.log('📍 Method:', req.method);
+    console.log('📍 Content-Type:', req.headers['content-type']);
+    console.log('Token recibido:', req.body.token ? 'TOKEN PRESENTE' : 'NO TOKEN');
+    console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'SET' : 'NOT SET');
+    console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'SET' : 'NOT SET');
+    
+    // Verificar que las variables de entorno estén configuradas
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+        console.error('❌ Variables de entorno Google no configuradas');
+        return res.status(500).json({
+            success: false,
+            message: 'Configuración de Google OAuth incompleta'
+        });
+    }
     
     try {
         const { token } = req.body;
         
         if (!token) {
+            console.error('❌ No se recibió token en el body');
             return res.status(400).json({
-                status: 0,
-                msg: 'Token de Google requerido'
+                success: false,
+                message: 'Token de Google requerido'
             });
         }
 
+        console.log('🔍 Verificando token con Google...');
         // Verificar el token con Google
         const ticket = await client.verifyIdToken({
             idToken: token,
@@ -36,7 +50,9 @@ googleAuthCtrl.verifyGoogleToken = async (req, res) => {
         });
 
         const payload = ticket.getPayload();
-        console.log('✅ Token verificado. Payload:', payload);
+        console.log('✅ Token verificado exitosamente');
+        console.log('📧 Email:', payload.email);
+        console.log('👤 Nombre:', payload.given_name, payload.family_name);
 
         const googleId = payload['sub'];
         const email = payload['email'];
@@ -83,6 +99,7 @@ googleAuthCtrl.verifyGoogleToken = async (req, res) => {
             console.log('✅ Nuevo usuario creado:', usuario.email);
         }
 
+        console.log('🔍 Generando JWT token...');
         // Generar JWT token para la sesión
         const jwtToken = jwt.sign(
             { 
@@ -94,24 +111,35 @@ googleAuthCtrl.verifyGoogleToken = async (req, res) => {
             { expiresIn: '24h' }
         );
 
-        res.json({
-            status: 1,
-            msg: 'Login con Google exitoso',
+        console.log('✅ Login con Google exitoso para:', usuario.email);
+        
+        const response = {
+            success: true,
+            message: 'Login con Google exitoso',
             token: jwtToken,
-            id: usuario._id,
-            nombreUsuario: usuario.nombreUsuario,
-            nombre: usuario.nombre,
-            apellido: usuario.apellido,
-            email: usuario.email,
-            tipoUsuario: usuario.tipoUsuario,
-            picture: usuario.picture
-        });
+            user: {
+                id: usuario._id,
+                nombreUsuario: usuario.nombreUsuario,
+                nombre: usuario.nombre,
+                apellido: usuario.apellido,
+                email: usuario.email,
+                tipoUsuario: usuario.tipoUsuario,
+                picture: usuario.picture
+            }
+        };
+        
+        console.log('📤 Enviando respuesta exitosa');
+        res.json(response);
 
     } catch (error) {
         console.error('❌ Error verificando token de Google:', error);
+        console.error('❌ Error details:', error.message);
+        console.error('❌ Error stack:', error.stack);
+        
         res.status(400).json({
-            status: 0,
-            msg: 'Token de Google inválido o expirado'
+            success: false,
+            message: 'Token de Google inválido o expirado',
+            error: error.message
         });
     }
 };
