@@ -58,9 +58,16 @@ googleAuthCtrl.verifyGoogleToken = async (req, res) => {
 
         const googleId = payload['sub'];
         const email = payload['email'];
-        const nombre = payload['given_name'];
-        const apellido = payload['family_name'];
+        const fullName = payload['name'] || '';
+        const nombre = payload['given_name'] || fullName.split(' ')[0] || 'Usuario';
+        const apellido = payload['family_name'] || fullName.split(' ').slice(1).join(' ') || 'Google';
         const picture = payload['picture'];
+
+        console.log('📝 Datos extraídos:');
+        console.log('- Nombre completo:', fullName);
+        console.log('- Nombre:', nombre);
+        console.log('- Apellido:', apellido);
+        console.log('- Email:', email);
 
         // Buscar usuario existente por email o Google ID
         let usuario = await Usuario.findOne({
@@ -215,8 +222,9 @@ googleAuthCtrl.handleGoogleCallback = async (req, res) => {
         const payload = ticket.getPayload();
         const googleId = payload['sub'];
         const email = payload['email'];
-        const nombre = payload['given_name'];
-        const apellido = payload['family_name'];
+        const fullName = payload['name'] || '';
+        const nombre = payload['given_name'] || fullName.split(' ')[0] || 'Usuario';
+        const apellido = payload['family_name'] || fullName.split(' ').slice(1).join(' ') || 'Google';
         const picture = payload['picture'];
 
         // Buscar o crear usuario (similar a verifyGoogleToken)

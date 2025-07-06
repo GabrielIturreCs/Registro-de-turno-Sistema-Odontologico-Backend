@@ -51,11 +51,13 @@ pacienteCtrl.createPaciente = async (req, res) =>{
        // Validar que todos los campos requeridos estén presentes
        const requiredFields = ['nombre', 'apellido', 'telefono', 'direccion', 'dni', 'email', 'obraSocial', 'userId'];
        for (const field of requiredFields) {
-         if (!req.body[field]) {
+         if (!req.body[field] || req.body[field].trim() === '') {
+           console.log(`❌ Campo faltante o vacío: ${field}, valor:`, req.body[field]);
            return res.status(400).json({
              'status': '0',
-             'msg': `El campo ${field} es requerido`,
-             'success': false
+             'msg': `El campo ${field} es requerido y no puede estar vacío`,
+             'success': false,
+             'missingField': field
            });
          }
        }
