@@ -1,7 +1,11 @@
 /***********************
  *  DENTAL SYSTEM API  *
  ***********************/
-require('dotenv').config();
+// Configurar dotenv según el entorno
+const envFile = process.env.NODE_ENV === 'development' ? '.env.development' : '.env';
+require('dotenv').config({ path: envFile });
+console.log(`🔧 Loading environment from: ${envFile}`);
+
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -20,9 +24,15 @@ const allowedOrigins = [
     'http://localhost:4200'
 ];
 
+console.log('🌐 CORS Configuration:');
+console.log('- Allowed Origins:', allowedOrigins);
+console.log('- Frontend URL from env:', process.env.FRONTEND_URL);
+
 app.use(cors({
     origin: function (origin, callback) {
+        console.log('🔍 CORS request from origin:', origin);
         if (!origin || allowedOrigins.includes(origin)) {
+            console.log('✅ CORS allowed for origin:', origin);
             callback(null, true);
         } else {
             console.log('🚫 CORS blocked:', origin);
@@ -31,7 +41,7 @@ app.use(cors({
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     exposedHeaders: ['Set-Cookie']
 }));
 

@@ -1,5 +1,6 @@
 const Usuario = require ('../models/usuario') 
 const {encrypt,compare} = require('../helpers/handleBcrypt') 
+const { generateToken } = require('../helpers/jwtHelper')
 const authCtrl = {}
 const Paciente = require('../models/paciente');
 const Dentista = require('../models/dentista');
@@ -101,16 +102,66 @@ authCtrl.loginUsuario = async (req, res) => {
                 msg: "Contraseña incorrecta"
             });
         }
+
+        // Buscar información adicional según el tipo de usuario
+        let userDetails = {};
+        if (user.tipoUsuario === 'paciente') {
+            const paciente = await Paciente.findOne({ userId: user._id });
+            if (paciente) {
+                userDetails = {
+                    nombre: paciente.nombre,
+                    apellido: paciente.apellido,
+                    email: paciente.email,
+                    dni: paciente.dni,
+                    telefono: paciente.telefono,
+                    obraSocial: paciente.obraSocial
+                };
+            }
+        } else if (user.tipoUsuario === 'dentista') {
+            const dentista = await Dentista.findOne({ userId: user._id });
+            if (dentista) {
+                userDetails = {
+                    nombre: dentista.nombre,
+                    apellido: dentista.apellido,
+                    email: dentista.email,
+                    dni: dentista.dni,
+                    telefono: dentista.telefono,
+                    legajo: dentista.legajo
+                };
+            }
+        } else if (user.tipoUsuario === 'administrador') {
+            const administrador = await Administrador.findOne({ userId: user._id });
+            if (administrador) {
+                userDetails = {
+                    nombre: administrador.nombre,
+                    apellido: administrador.apellido,
+                    dni: administrador.dni,
+                    telefono: administrador.telefono
+                };
+            }
+        }
+
+        // Crear payload para el JWT
+        const payload = {
+            id: user._id,
+            nombreUsuario: user.nombreUsuario,
+            tipoUsuario: user.tipoUsuario,
+            ...userDetails
+        };
+
+        // Generar token JWT
+        const token = generateToken(payload);
  
         res.json({ 
             status: 1, 
             msg: "Login exitoso", 
-            nombreUsuario: user.nombreUsuario, //retorno información útil para el frontend 
-            tipoUsuario: user.tipoUsuario, //retorno información útil para el frontend
-            nombre: user.nombre, //retorno información útil para el frontend
-            apellido: user.apellido, //retorno información útil para el frontend
-            //userid: user._id //retorno información útil para el frontend 
-            id: user._id 
+            token: token,
+            user: {
+                id: user._id,
+                nombreUsuario: user.nombreUsuario,
+                tipoUsuario: user.tipoUsuario,
+                ...userDetails
+            }
         }) 
     } catch (error) { 
         console.error("ERROR LOGIN:", error);
