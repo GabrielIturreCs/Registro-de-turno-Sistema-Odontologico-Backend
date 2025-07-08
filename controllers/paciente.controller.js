@@ -171,4 +171,29 @@ pacienteCtrl.updatePaciente = async (req, res) => {
     }
 }
 
+pacienteCtrl.getOdontograma = async (req, res) => {
+    try {
+        const paciente = await Paciente.findById(req.params.id);
+        if (!paciente) return res.status(404).json({ error: 'Paciente no encontrado' });
+        res.json(paciente.odontograma);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al obtener el odontograma' });
+    }
+};
+
+pacienteCtrl.updateOdontograma = async (req, res) => {
+    try {
+        const { odontograma } = req.body;
+        const paciente = await Paciente.findByIdAndUpdate(
+            req.params.id,
+            { odontograma },
+            { new: true }
+        );
+        if (!paciente) return res.status(404).json({ error: 'Paciente no encontrado' });
+        res.json(paciente.odontograma);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al actualizar el odontograma' });
+    }
+};
+
 module.exports = pacienteCtrl;
