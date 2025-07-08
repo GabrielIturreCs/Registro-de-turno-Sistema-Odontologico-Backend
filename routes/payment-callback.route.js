@@ -15,6 +15,20 @@ router.get('/test', (req, res) => {
     });
 });
 
+// Ruta de prueba de redirección NUEVA
+router.get('/test-redirect', (req, res) => {
+    console.log('🧪 === PRUEBA DE REDIRECCIÓN ===');
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
+    console.log('Host:', req.get('host'));
+    
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4201';
+    const redirectUrl = `${frontendUrl}/payment/success?test=true`;
+    
+    console.log('🔄 Redirigiendo a:', redirectUrl);
+    return res.redirect(redirectUrl);
+});
+
 // Intentar cargar cookieHelper con manejo de errores
 let cookieHelper;
 try {
@@ -25,33 +39,120 @@ try {
     cookieHelper = null;
 }
 
-// Endpoint para manejar fallos de pago - VERSIÓN SIMPLIFICADA
+// Endpoint para manejar fallos de pago - VERSIÓN MEJORADA
 router.get('/failure', (req, res) => {
-    console.log('❌ === PAGO FALLIDO (SIMPLE) ===');
-    console.log('Query params:', req.query);
+    console.log('❌ === PAGO FALLIDO ===');
+    console.log('Query params de MercadoPago:', req.query);
     
-    // Redirigir directamente al frontend sin usar cookies por ahora
-    const redirectUrl = `${process.env.FRONTEND_URL || 'https://registrar-turno-sistema-clinico.onrender.com'}/payment/failure?return=vistaPaciente&userType=paciente`;
+    const {
+        collection_id,
+        collection_status,
+        external_reference,
+        payment_id,
+        preference_id
+    } = req.query;
     
-    console.log('🔄 Redirecting to:', redirectUrl);
+    const isDevelopment = process.env.NODE_ENV !== 'production' || req.get('host')?.includes('localhost');
+    const frontendUrl = isDevelopment 
+        ? 'http://localhost:4201' 
+        : (process.env.FRONTEND_URL || 'https://registrar-turno-sistema-clinico.onrender.com');
+    
+    const params = new URLSearchParams({
+        collection_id: collection_id || '',
+        collection_status: collection_status || 'failure',
+        external_reference: external_reference || '',
+        payment_id: payment_id || collection_id || '',
+        preference_id: preference_id || '',
+        return: 'vistaPaciente',
+        userType: 'paciente'
+    });
+    
+    const redirectUrl = `${frontendUrl}/payment/failure?${params.toString()}`;
+    
+    console.log('🔄 Redirigiendo a:', redirectUrl);
+    console.log('🔧 Frontend URL detectada:', frontendUrl);
     return res.redirect(redirectUrl);
 });
 
-// Endpoint para manejar pagos pendientes - VERSIÓN SIMPLIFICADA  
+// Endpoint para manejar pagos pendientes - VERSIÓN MEJORADA  
 router.get('/pending', (req, res) => {
-    console.log('⏳ === PAGO PENDIENTE (SIMPLE) ===');
+    console.log('⏳ === PAGO PENDIENTE ===');
+    console.log('Query params de MercadoPago:', req.query);
     
-    const redirectUrl = `${process.env.FRONTEND_URL || 'https://registrar-turno-sistema-clinico.onrender.com'}/payment/pending?return=vistaPaciente&userType=paciente`;
+    const {
+        collection_id,
+        collection_status,
+        external_reference,
+        payment_id,
+        preference_id
+    } = req.query;
     
+    const isDevelopment = process.env.NODE_ENV !== 'production' || req.get('host')?.includes('localhost');
+    const frontendUrl = isDevelopment 
+        ? 'http://localhost:4201' 
+        : (process.env.FRONTEND_URL || 'https://registrar-turno-sistema-clinico.onrender.com');
+    
+    const params = new URLSearchParams({
+        collection_id: collection_id || '',
+        collection_status: collection_status || 'pending',
+        external_reference: external_reference || '',
+        payment_id: payment_id || collection_id || '',
+        preference_id: preference_id || '',
+        return: 'vistaPaciente',
+        userType: 'paciente'
+    });
+    
+    const redirectUrl = `${frontendUrl}/payment/pending?${params.toString()}`;
+    
+    console.log('🔄 Redirigiendo a:', redirectUrl);
+    console.log('🔧 Frontend URL detectada:', frontendUrl);
     return res.redirect(redirectUrl);
 });
 
-// Endpoint para manejar éxito - VERSIÓN SIMPLIFICADA
+// Endpoint para manejar éxito - VERSIÓN MEJORADA
 router.get('/success', (req, res) => {
-    console.log('🎉 === PAGO EXITOSO (SIMPLE) ===');
+    console.log('🎉 === PAGO EXITOSO === (DESDE ARCHIVO DE RUTAS)');
+    console.log('Query params de MercadoPago:', req.query);
+    console.log('Host de la petición:', req.get('host'));
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
     
-    const redirectUrl = `${process.env.FRONTEND_URL || 'https://registrar-turno-sistema-clinico.onrender.com'}/payment/success?return=vistaPaciente&userType=paciente`;
+    // Extraer parámetros importantes de MercadoPago
+    const {
+        collection_id,
+        collection_status,
+        external_reference,
+        payment_id,
+        status,
+        preference_id
+    } = req.query;
     
+    // Detectar si estamos en desarrollo local
+    const isDevelopment = process.env.NODE_ENV !== 'production' || req.get('host')?.includes('localhost');
+    const frontendUrl = isDevelopment 
+        ? 'http://localhost:4201' 
+        : (process.env.FRONTEND_URL || 'https://registrar-turno-sistema-clinico.onrender.com');
+    
+    console.log('🔧 Configuración detectada:');
+    console.log('   - isDevelopment:', isDevelopment);
+    console.log('   - frontendUrl:', frontendUrl);
+    
+    // Construir URL de redirección con todos los parámetros
+    const params = new URLSearchParams({
+        collection_id: collection_id || '',
+        collection_status: collection_status || 'approved',
+        external_reference: external_reference || '',
+        payment_id: payment_id || collection_id || '',
+        status: status || 'success',
+        preference_id: preference_id || '',
+        return: 'vistaPaciente',
+        userType: 'paciente'
+    });
+    
+    const redirectUrl = `${frontendUrl}/payment/success?${params.toString()}`;
+    
+    console.log('🔄 Redirigiendo a:', redirectUrl);
+    console.log('🔧 Frontend URL detectada:', frontendUrl);
     return res.redirect(redirectUrl);
 });
 

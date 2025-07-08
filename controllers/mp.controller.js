@@ -14,7 +14,13 @@ mpCtrl.getPaymentLink = async (req, res) => {
         }
 
         const url = "https://api.mercadopago.com/checkout/preferences";
-        const frontendUrl = process.env.FRONTEND_URL || 'https://registrar-turno-sistema-clinico.onrender.com';
+        
+        // URLs de producción para Render
+        const backendBaseUrl = process.env.BACKEND_URL || 'https://backend-develop-nu3j.onrender.com';
+        
+        console.log('🔧 Configuración de URLs para PRODUCCIÓN:');
+        console.log('   - Backend URL:', backendBaseUrl);
+        console.log('   - Entorno: PRODUCCIÓN (Render)');
         
         const body = {
             payer_email: req.body.payer_email || "payer_email@gmail.com",
@@ -29,10 +35,12 @@ mpCtrl.getPaymentLink = async (req, res) => {
                 }
             ],
             back_urls: {
-                failure: `${frontendUrl}/payment/failure`,
-                pending: `${frontendUrl}/payment/pending`,
-                success: `${frontendUrl}/payment/success`
+                failure: `${backendBaseUrl}/api/payment-callback/failure`,
+                pending: `${backendBaseUrl}/api/payment-callback/pending`,
+                success: `${backendBaseUrl}/api/payment-callback/success`
             },
+            // Configuración importante para el retorno automático
+            auto_return: "approved",  // Retorno automático solo en pagos aprobados
             // Agregar campos que envía el frontend
             external_reference: req.body.external_reference,
             notification_url: req.body.notification_url,

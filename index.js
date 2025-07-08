@@ -54,18 +54,10 @@ app.get('/api/test', (req, res) => {
 
 /***********************
  *  Payment Callbacks  *
+ *  (Handled by routes) *
  ***********************/
-app.get('/api/payment-callback/success', (req, res) => {
-    res.redirect(`${process.env.FRONTEND_URL || 'https://registrar-turno-sistema-clinico.onrender.com'}/vistaPaciente`);
-});
-
-app.get('/api/payment-callback/failure', (req, res) => {
-    res.redirect(`${process.env.FRONTEND_URL || 'https://registrar-turno-sistema-clinico.onrender.com'}/vistaPaciente`);
-});
-
-app.get('/api/payment-callback/pending', (req, res) => {
-    res.redirect(`${process.env.FRONTEND_URL || 'https://registrar-turno-sistema-clinico.onrender.com'}/vistaPaciente`);
-});
+// Payment callbacks are handled by ./routes/payment-callback.route.js
+// No duplicate routes here to avoid conflicts
 
 /***********************
  *  API Routes         *
@@ -95,9 +87,9 @@ try {
     app.use('/api/mp', require('./routes/mp.route.js'));
     console.log('✅ MercadoPago routes loaded');
     
-    // Payment callback routes - ACTIVADAS para registrar pagos
-    app.use('/api/payment-callback', require('./routes/payment-callback.route.js'));
-    console.log('✅ Payment callback routes loaded');
+    // Payment callback routes - ACTIVADAS para registrar pagos (NUEVO ARCHIVO)
+    app.use('/api/payment-callback', require('./routes/payment-callback-new.route.js'));
+    console.log('✅ Payment callback routes loaded (NEW VERSION)');
     
     console.log('✅ All routes loaded successfully');
     
