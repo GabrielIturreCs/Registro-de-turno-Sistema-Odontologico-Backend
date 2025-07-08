@@ -84,7 +84,10 @@ TurnoCtrl.createTurno = async(req, res) => {
             tratamientoId: req.body.tratamientoId,
             observaciones: req.body.observaciones || '',
             paymentId: req.body.paymentId || '',
-            paymentStatus: req.body.paymentStatus || ''
+            paymentStatus: req.body.paymentStatus || '',
+            metodoPago: req.body.metodoPago || 'efectivo', // Nuevo campo
+            fechaPago: req.body.fechaPago ? new Date(req.body.fechaPago) : null,
+            montoRecibido: req.body.montoRecibido || null
         };
 
         // Agregar información del tratamiento

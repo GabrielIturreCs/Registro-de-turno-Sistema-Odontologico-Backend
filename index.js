@@ -95,12 +95,9 @@ try {
     app.use('/api/mp', require('./routes/mp.route.js'));
     console.log('✅ MercadoPago routes loaded');
     
-    // Comentar estas rutas por ahora para identificar el problema
-    // app.use('/api/payment', require('./routes/payment.route.js'));
-    // console.log('✅ Payment routes loaded');
-    
-    // app.use('/api/payment-callback', require('./routes/payment-callback.route.js'));
-    // console.log('✅ Payment callback routes loaded');
+    // Payment callback routes - ACTIVADAS para registrar pagos
+    app.use('/api/payment-callback', require('./routes/payment-callback.route.js'));
+    console.log('✅ Payment callback routes loaded');
     
     console.log('✅ All routes loaded successfully');
     
