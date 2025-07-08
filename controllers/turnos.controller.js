@@ -1,0 +1,223 @@
+const Turno = require('../models/turno.js')
+const Tratamiento = require('../models/tratamiento.js')
+const Paciente = require('../models/paciente.js')
+const TurnoCtrl = {}
+const axios = require('axios');
+
+TurnoCtrl.getTurnos = async(req, res) => {
+    try {
+        var turnos = await Turno.find().sort({ fechaCreacion: -1 });
+        res.json(turnos);
+    } catch(err) {
+        res.status(500).json({
+            'status': '0',
+            'msg': 'Error al obtener turnos',
+            'error': err.message
+        });
+    }
+}
+
+TurnoCtrl.getTurnosById = async(req, res) => {
+    try {
+        const turno = await Turno.findById(req.params.id);
+        if (!turno) {
+            return res.status(404).json({
+                'status': '0',
+                'msg': 'Turno no encontrado'
+            });
+        }
+        res.json(turno);
+    } catch(err) {
+        res.status(404).json({
+            'status': '0',
+            'msg': 'Turno no encontrado'
+        });
+    }
+}
+
+TurnoCtrl.createTurno = async(req, res) => {
+    try {
+        // Generar número de turno automáticamente
+        const ultimoTurno = await Turno.findOne({ nroTurno: { $exists: true } }).sort({ nroTurno: -1 });
+        const nroTurno = ultimoTurno && ultimoTurno.nroTurno ? ultimoTurno.nroTurno + 1 : 1;
+
+        // Validar campos requeridos
+        if (!req.body.pacienteId || !req.body.tratamientoId) {
+            return res.status(400).json({
+                'status': '0',
+                'msg': 'pacienteId y tratamientoId son requeridos'
+            });
+        }
+
+        // Buscar información del tratamiento
+        let tratamientoInfo = null;
+        if(req.body.tratamientoId) {
+            tratamientoInfo = await Tratamiento.findById(req.body.tratamientoId);
+            if (!tratamientoInfo) {
+                return res.status(400).json({
+                    'status': '0',
+                    'msg': 'Tratamiento no encontrado'
+                });
+            }
+        }
+
+        // Buscar información del paciente
+        let pacienteInfo = null;
+        if(req.body.pacienteId) {
+            pacienteInfo = await Paciente.findById(req.body.pacienteId);
+            if (!pacienteInfo) {
+                return res.status(400).json({
+                    'status': '0',
+                    'msg': 'Paciente no encontrado'
+                });
+            }
+        }
+
+        // Construir el objeto de datos del turno
+        const turnoData = {
+            nroTurno: nroTurno,
+            fecha: req.body.fecha,
+            hora: req.body.hora,
+            // Usar SIEMPRE el estado recibido del frontend, sin sobreescribir
+            estado: typeof req.body.estado === 'string' ? req.body.estado : 'reservado',
+            pacienteId: req.body.pacienteId,
+            tratamientoId: req.body.tratamientoId,
+            observaciones: req.body.observaciones || '',
+            paymentId: req.body.paymentId || '',
+            paymentStatus: req.body.paymentStatus || '',
+            metodoPago: req.body.metodoPago || 'efectivo', // Nuevo campo
+            fechaPago: req.body.fechaPago ? new Date(req.body.fechaPago) : null,
+            montoRecibido: req.body.montoRecibido || null
+        };
+
+        // Agregar información del tratamiento
+        if(tratamientoInfo) {
+            turnoData.tratamiento = tratamientoInfo.descripcion || tratamientoInfo.nombre || 'Sin descripción';
+            turnoData.precioFinal = tratamientoInfo.precio || tratamientoInfo.historial || 0;
+            turnoData.duracion = tratamientoInfo.duracion || '30 min';
+        } else {
+            turnoData.tratamiento = 'Sin descripción';
+            turnoData.precioFinal = 0;
+            turnoData.duracion = '30 min';
+        }
+
+        // Agregar información del paciente
+        if(pacienteInfo) {
+            turnoData.nombre = pacienteInfo.nombre || 'Sin nombre';
+            turnoData.apellido = pacienteInfo.apellido || 'Sin apellido';
+        } else {
+            turnoData.nombre = 'Sin nombre';
+            turnoData.apellido = 'Sin apellido';
+        }
+
+        console.log('Datos del turno a crear:', turnoData);
+
+        const turno = new Turno(turnoData);
+        await turno.save();
+        res.status(201).json({
+            'status': '1',
+            'msg': 'Turno creado correctamente',
+            'turno': turno
+        });
+    } catch(err) {
+        console.error('Error al crear turno:', err);
+        console.error('Stack trace:', err.stack);
+        res.status(400).json({
+            'status': '0',
+            'msg': 'Error al crear el turno',
+            'error': err.message
+        });
+    }
+}
+
+// Permite actualizar el estado del turno (por ejemplo, de 'pendiente' a 'reservado')
+TurnoCtrl.updateTurno = async(req, res) => {
+    try {
+        const turnoId = req.params.id;
+        const { _id, ...datosActualizadoTurno } = req.body;
+        const turnoActualizado = await Turno.findByIdAndUpdate(
+            turnoId,
+            { $set: datosActualizadoTurno },
+            { new: true, runValidators: true }
+        );
+        
+        if(!turnoActualizado) {
+            return res.status(404).json({
+                'status': '0',
+                'msg': 'Turno no encontrado'
+            });
+        }
+        
+        res.json({
+            'status': '1',
+            'msg': 'Turno actualizado correctamente',
+            'turno': turnoActualizado
+        });
+    } catch(err) {
+        res.status(404).json({
+            'status': '0',
+            'msg': 'Error al actualizar turno',
+            'error': err.message
+        });
+    }
+}
+
+TurnoCtrl.deleteTurno = async(req, res) => {
+    try {
+        await Turno.deleteOne({ _id: req.params.id });
+        res.json({
+            'status': '1',
+            'msg': 'Turno eliminado correctamente'
+        });
+    } catch(err) {
+        res.status(404).json({
+            'status': '0',
+            'msg': 'Turno no encontrado'
+        });
+    }
+}
+
+TurnoCtrl.cancelarTurnoYReembolso = async (req, res) => {
+  try {
+    const turno = await Turno.findById(req.params.id);
+    if (!turno) return res.status(404).json({ msg: 'Turno no encontrado' });
+
+    // 1. Cambiar estado del turno
+    turno.estado = 'cancelado';
+
+    // 2. Intentar reembolsar/cancelar el pago en MercadoPago
+    let refundResult = null;
+    if (turno.paymentId) {
+      // Intentar refund (si ya está aprobado)
+      try {
+        const refundUrl = `https://api.mercadopago.com/v1/payments/${turno.paymentId}/refunds`;
+        refundResult = await axios.post(refundUrl, {}, {
+          headers: {
+            Authorization: `Bearer ${process.env.ACCESS_TOKEN}`
+          }
+        });
+        turno.paymentStatus = 'refunded';
+      } catch (err) {
+        // Si no se puede refund, intentar cancelar (si está pendiente)
+        try {
+          const cancelUrl = `https://api.mercadopago.com/v1/payments/${turno.paymentId}`;
+          await axios.put(cancelUrl, { status: 'cancelled' }, {
+            headers: {
+              Authorization: `Bearer ${process.env.ACCESS_TOKEN}`
+            }
+          });
+          turno.paymentStatus = 'cancelled';
+        } catch (err2) {
+          return res.status(400).json({ msg: 'No se pudo cancelar ni reembolsar el pago en MercadoPago', error: err2.response?.data || err2.message });
+        }
+      }
+    }
+
+    await turno.save();
+    return res.json({ msg: 'Turno cancelado y pago gestionado', refundResult });
+  } catch (error) {
+    return res.status(500).json({ msg: 'Error al cancelar turno', error });
+  }
+};
+
+module.exports = TurnoCtrl;
