@@ -9,6 +9,8 @@ console.log(`🔧 Loading environment from: ${envFile}`);
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 require('./database');
 
 const app = express();
@@ -119,3 +121,28 @@ app.listen(PORT, () => {
     console.log(`🔑 Google Client ID: ${process.env.GOOGLE_CLIENT_ID ? 'SET' : 'NOT SET'}`);
     console.log('✅ Server ready to accept requests');
 });
+
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'API Sistema Odontológico',
+      version: '1.0.0',
+      description: 'Documentación de la API del sistema de gestión odontológica',
+    },
+    servers: [
+      {
+        url: 'https://registro-de-turno-sistema-odontologico.onrender.com/api',
+        description: 'Servidor de producción',
+      },
+      {
+        url: 'http://localhost:3000/api',
+        description: 'Servidor local',
+      },
+    ],
+  },
+  apis: ['./routes/*.js', './controllers/*.js'],
+};
+
+const swaggerSpecs = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
