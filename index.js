@@ -111,17 +111,8 @@ try {
 }
 
 /***********************
- *  Start Server       *
+ *  Swagger Configuration *
  ***********************/
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL}`);
-    console.log(`🔑 Google Client ID: ${process.env.GOOGLE_CLIENT_ID ? 'SET' : 'NOT SET'}`);
-    console.log('✅ Server ready to accept requests');
-});
-
 const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
@@ -146,3 +137,17 @@ const swaggerOptions = {
 
 const swaggerSpecs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+console.log('📚 Swagger documentation available at /api-docs');
+
+/***********************
+ *  Start Server       *
+ ***********************/
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL}`);
+    console.log(`🔑 Google Client ID: ${process.env.GOOGLE_CLIENT_ID ? 'SET' : 'NOT SET'}`);
+    console.log('✅ Server ready to accept requests');
+    console.log(`📖 API Documentation: http://localhost:${PORT}/api-docs`);
+});
