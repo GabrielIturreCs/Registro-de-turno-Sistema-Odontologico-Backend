@@ -223,14 +223,12 @@ TurnoCtrl.cancelarTurnoYReembolso = async (req, res) => {
 // Nuevo endpoint: obtener los turnos del paciente autenticado
 TurnoCtrl.getMisTurnos = async (req, res) => {
   try {
-    // El middleware authenticateToken pone el usuario en req.user
     const userId = req.user.id;
-    // Buscar el paciente asociado a este usuario
+    const Paciente = require('../models/paciente');
     const paciente = await Paciente.findOne({ userId });
     if (!paciente) {
       return res.status(404).json({ msg: 'Paciente no encontrado' });
     }
-    // Buscar turnos de este paciente
     const turnos = await Turno.find({ pacienteId: paciente._id }).sort({ fechaCreacion: -1 });
     res.json(turnos);
   } catch (err) {
