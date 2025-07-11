@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const TurnoCtrl = require('../controllers/turnos.controller.js')
+const { authenticateToken } = require('../helpers/jwtHelper');
 
 /**
  * @swagger
@@ -88,5 +89,6 @@ router.put('/:id',TurnoCtrl.updateTurno);
 
 router.post('/',TurnoCtrl.createTurno);
 router.delete('/:id/cancelar', TurnoCtrl.cancelarTurnoYReembolso);
+router.get('/mis-turnos', authenticateToken, TurnoCtrl.getMisTurnos);
 
 module.exports = router;
